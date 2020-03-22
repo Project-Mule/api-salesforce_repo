@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="new" format="xml">
+      <types:example format="xml" element="Customer" location="examples/salefor.xml"/>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#889a0b3e-5ebe-4abb-988a-4a8497aa7b52">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="new"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#05e47b86-047a-4b12-91f5-98b7471bcd02">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="new"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

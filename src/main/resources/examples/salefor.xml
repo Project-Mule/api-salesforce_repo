@@ -1,0 +1,10 @@
+<Customer>
+	<id>250</id>
+	<fname>Dagim</fname>
+	<lname>Tadesse</lname>
+	<street>Devone pines dr</street>
+	<city>jacksonville</city>
+	<state>Florida</state>
+	<zip>32211</zip>
+	<appno>9019</appno>
+</Customer>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="d486f5a9-f7b7-40f6-86b6-156e3a0d56db" >
+		<salesforce:cached-basic-connection username="hailayalex@yahoo.com" password="password2020" securityToken="d728frxyjWgVSCRhZvuRPIMgd" />
+	</salesforce:sfdc-config>
+	<flow name="api-saleforce-get-all" doc:id="1d14cac2-e03e-4a16-9928-a96eb7f029d7" >
+		<salesforce:query doc:name="Query" doc:id="1e337e1f-0c5d-45a7-a99a-88218ec44337" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query >SELECT cid__c,city__c,cname__c,Id,lname__c,state__c,street__c,zip__c FROM customer__c</salesforce:salesforce-query>
+		</salesforce:query>
+		<logger level="INFO" doc:name="Logger" doc:id="26690047-c063-4d2c-8e6a-48786eb26391" message="#[attributes]"/>
+		<ee:transform doc:name="Transform Message" doc:id="4f3ae33a-7143-460a-99a2-56677658bbfd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="api-saleforce-create-insert" doc:id="fcf072cc-7aab-45a3-9d21-cd1f4c780652" >
+		<ee:transform doc:name="Transform Message" doc:id="889a0b3e-5ebe-4abb-988a-4a8497aa7b52" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+[{
+	cid__c: payload.Customer.id,
+	cname__c: payload.Customer.fname,
+	lname__c: payload.Customer.lname,
+	street__c: payload.Customer.street,
+	city__c: payload.Customer.city,
+	state__c: payload.Customer.state,
+	zip__c: payload.Customer.zip
+}]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:create type="customer__c" doc:name="Create" doc:id="091765a8-4aa8-49f8-9aa4-ac293634b722" config-ref="Salesforce_Config"/>
+		<logger level="INFO" doc:name="Logger" doc:id="107f4e2c-af51-43f6-8f4e-aeb7e2d4b172" message="#[attributes]"/>
+		<ee:transform doc:name="Transform Message" doc:id="01921883-e372-4978-af1f-7d7fdbde1c04" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="api-saleforce-update" doc:id="1f3b7c9b-deef-44f0-95b1-fab96ad5e098" >
+		<ee:transform doc:name="Transform Message" doc:id="05e47b86-047a-4b12-91f5-98b7471bcd02" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+[{
+	cid__c: payload.Customer.id as Number,
+	cname__c: payload.Customer.fname,
+	lname__c: payload.Customer.lname,
+	street__c: payload.Customer.street,
+	city__c: payload.Customer.city,
+	state__c: payload.Customer.state,
+	zip__c: payload.Customer.zip
+}]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:upsert type="customer__c" doc:name="Upsert" doc:id="8d514418-7be0-42ae-a1f3-d663449e376b" config-ref="Salesforce_Config" externalIdFieldName="cid__c"/>
+		<logger level="INFO" doc:name="Logger" doc:id="81645339-01ba-4064-8c03-b66366104467" message="#[attributes]"/>
+		<ee:transform doc:name="Transform Message" doc:id="0f493185-1e82-4194-96d4-b424c6567160" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="api-saleforceFlow" doc:id="7ec6d562-d4ad-412d-a1b0-2faaf0624d6c" >
+		<salesforce:subscribe-topic topic="pushTopicForCustomer1" doc:name="Subscribe topic" doc:id="34ae7291-4c61-48b5-8fb2-769c16127cdf" config-ref="Salesforce_Config"/>
+		<logger level="INFO" doc:name="Logger" doc:id="4a04919b-4927-41aa-8d03-883b428934cb" message="#[attributes]"/>
+		<logger level="INFO" doc:name="Logger" doc:id="ca2f4536-34de-44fa-bdf1-b3ce33e14620" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="c6f10396-0180-4d06-b45d-03ae392438c4" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+[{
+	cid__c: payload.cid__c as Number,
+	Fname__c: payload.cname__c,
+	Lname__c: payload.lname__c,
+	city__c: payload.city__c,
+	street__c: payload.street__c,
+	state__c: payload.state__c,
+	zip__c: payload.zip__c 
+}]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:upsert type="Copycust__c" doc:name="Upsert" doc:id="be60ea3d-e70d-4c1c-88d5-3b988631099a" config-ref="Salesforce_Config" externalIdFieldName="cid__c"/>
+		<ee:transform doc:name="Transform Message" doc:id="1059960e-06ed-4dbf-9f37-2bffe171b11e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	msg: "record is update or insert"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

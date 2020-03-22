@@ -1,0 +1,38 @@
+#%RAML 1.0
+baseUri: https://anypoint.mulesoft.com/mocking/api/v1/links/7018bb09-8a93-478d-8944-4703e663d2dd/ # 
+title: customersf
+types:
+  custsf: !include sfdata/dataType.raml
+description: This API is created to connect with Sfdc(salesforce.com)
+/sfdc1:
+  get:
+    responses:
+      200:
+        body:
+          application/xml:
+            examples:
+              exm1: !include value/examples.raml
+  post:
+    body:
+      application/xml:
+        examples:
+          exm2: !include value/example.raml
+    responses:
+      201:
+        body:
+          application/json:
+            example:
+              message: data is inserted in to salesforce
+/sfdc1/{cid}:
+  put:
+    body:
+      application/xml:
+        examples:
+          ex3: !include value/example.raml
+    responses:
+      201:
+        body:
+          application/json:
+            example:
+              message: data is updated in salesforce!
+              
