@@ -78,7 +78,7 @@
             <layout>default</layout>
             <url>https://repository.mulesoft.org/releases/</url>
             <snapshots>
-                <enabled>True</enabled>
+                <enabled>false</enabled>
             </snapshots>
         </pluginRepository>
     </pluginRepositories>
